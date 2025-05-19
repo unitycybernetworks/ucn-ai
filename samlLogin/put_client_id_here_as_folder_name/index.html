@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home | Skye Cloud AI</title>
+    <link rel="icon" type="image/x-icon" href="skyecloudlogo.jpeg">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #333;
+            color: white;
+        }
+
+        #chatbot {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #222;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px;
+        }
+
+        .header, .footer {
+            background: #444;
+            padding: 10px;
+            text-align: center;
+        }
+
+        #chat-box {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 10px;
+            border: 1px solid #666;
+        }
+
+        .msg {
+            background: #555;
+            color: white;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .opt {
+            display: block;
+            background: #888;
+            padding: 10px;
+            margin-top: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+            text-align: left;
+            width: 100%;
+        }
+
+        .opt:hover {
+            background: #aaa;
+        }
+
+        #init {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        #searchContainer {
+            display: none;
+            margin-bottom: 10px;
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #666;
+            background: #444;
+            color: white;
+        }
+
+        .dropdown {
+            background: #444;
+            border: 1px solid #666;
+            max-height: 200px;
+            overflow-y: auto;
+            position: relative;
+            width: calc(100% - 20px);
+        }
+
+        .dropdown span {
+            display: block;
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #666;
+        }
+
+        .dropdown span:hover {
+            background: #555;
+        }
+
+        #selectedItem {
+            display: none;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: left;
+            color: #fff;
+            background: #444;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <button id="init">START CHAT</button>
+
+    <div id="chatbot" style="display: none;">
+        <div class="header">Skye Cloud AI</div>
+        <div id="chat-box"></div>
+        <div class="footer">Powered by Skye Cloud's Infrastructure Team</div>
+    </div>
+
+    <script>
+    var companyData = {
+               "UCN_CHILD": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+    };
+
+    var guideData = {
+        "Cyber Security": { options: { "Local Admin": "https://example.com/admin-guide", "Remove Local Admin Rights": "https://example.com/remove-admin", "Printers": "https://example.com/printers" } },
+        "Network Setup": { options: { "Configuration Steps": "https://example.com/config", "Troubleshooting": "https://example.com/troubleshoot", "Security Enhancements": "https://example.com/security" } }
+    };
+
+    var chatData = {
+        greeting: ["Welcome to Unity Cyber Networks AI 👋", "Choose an option below to get started"],
+        options: ["Companies", "Guides"],
+        companies: { title: "Please select a company", options: Object.keys(companyData) },
+        guides: { title: "Please select a guide category", options: Object.keys(guideData) }
+    };
+
+    window.onload = function () {
+        document.getElementById("chatbot").style.display = "flex"; 
+        initChat();
+    };
+
+    function initChat() {
+        var chatBox = document.getElementById("chat-box");
+        chatBox.innerHTML = ""; 
+
+        chatData.greeting.forEach(text => {
+            var msg = document.createElement("p");
+            msg.innerHTML = text;
+            msg.setAttribute("class", "msg");
+            chatBox.appendChild(msg);
+        });
+
+        showOptions(chatData.options);
+    }
+
+    function showOptions(options) {
+        var chatBox = document.getElementById("chat-box");
+
+        options.forEach(option => {
+            var opt = document.createElement("span");
+            opt.innerHTML = option;
+            opt.setAttribute("class", "opt");
+            opt.addEventListener("click", function () { 
+                chatBox.innerHTML += `<p class="msg">You selected: <strong>${option}</strong></p>`;
+                chatBox.querySelectorAll(".opt").forEach(el => el.remove());
+
+                if (option.toLowerCase() === "companies") {
+                    displaySearch(companyData, "company");
+                } else if (option.toLowerCase() === "guides") {
+                    displaySearch(guideData, "guide");
+                }
+            });
+            chatBox.appendChild(opt);
+        });
+    }
+
+    function displaySearch(data, type) {
+        var chatBox = document.getElementById("chat-box");
+        chatBox.innerHTML += `<div id="searchContainer"><input type="text" id="searchInput" placeholder="Search for a ${type}..." onkeyup="filterItems('${type}')"><div id="dropdown" class="dropdown"></div></div>`;
+        chatBox.innerHTML += `<div id="selectedItem"></div>`;
+        document.getElementById("searchContainer").style.display = "block";
+        filterItems(type);
+    }
+
+    function filterItems(type) {
+        var input = document.getElementById("searchInput").value.toLowerCase();
+        var dropdown = document.getElementById("dropdown");
+        var data = type === "company" ? companyData : guideData;
+        dropdown.innerHTML = "";
+
+        Object.keys(data).forEach(item => {
+            if (item.toLowerCase().includes(input)) {
+                var option = document.createElement("span");
+                option.innerHTML = item;
+                option.addEventListener("click", function () { 
+                    document.getElementById("searchContainer").style.display = "none";
+                    document.getElementById("selectedItem").style.display = "block";
+                    document.getElementById("selectedItem").innerHTML = `You selected: <strong>${item}</strong>`;
+                    displaySubcategories(data[item].options);
+                });
+                dropdown.appendChild(option);
+            }
+        });
+    }
+
+    function displaySubcategories(subcategories) {
+        var chatBox = document.getElementById("chat-box");
+
+        Object.keys(subcategories).forEach(subOption => {
+            var link = subcategories[subOption];
+            var opt = document.createElement("span");
+            opt.innerHTML = `${subOption}: <a href="${link}" target="_blank">${link}</a>`;
+            opt.setAttribute("class", "opt");
+            chatBox.appendChild(opt);
+        });
+    }
+    </script>
+
+</body>
+</html>

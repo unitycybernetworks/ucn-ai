@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home | Skye Cloud AI</title>
+    <link rel="icon" type="image/x-icon" href="skyecloudlogo.jpeg">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #333;
+            color: white;
+        }
+
+        #chatbot {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #222;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px;
+        }
+
+        .header, .footer {
+            background: #444;
+            padding: 10px;
+            text-align: center;
+        }
+
+        #chat-box {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 10px;
+            border: 1px solid #666;
+        }
+
+        .msg {
+            background: #555;
+            color: white;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .opt {
+            display: block;
+            background: #888;
+            padding: 10px;
+            margin-top: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+            text-align: left;
+            width: 100%;
+        }
+
+        .opt:hover {
+            background: #aaa;
+        }
+
+        #init {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        #searchContainer {
+            display: none;
+            margin-bottom: 10px;
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #666;
+            background: #444;
+            color: white;
+        }
+
+        .dropdown {
+            background: #444;
+            border: 1px solid #666;
+            max-height: 200px;
+            overflow-y: auto;
+            position: relative;
+            width: calc(100% - 20px);
+        }
+
+        .dropdown span {
+            display: block;
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #666;
+        }
+
+        .dropdown span:hover {
+            background: #555;
+        }
+
+        #selectedItem {
+            display: none;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: left;
+            color: #fff;
+            background: #444;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <button id="init">START CHAT</button>
+
+    <div id="chatbot" style="display: none;">
+        <div class="header">Skye Cloud AI</div>
+        <div id="chat-box"></div>
+        <div class="footer">Powered by Skye Cloud's Infrastructure Team</div>
+    </div>
+
+    <script>
+    var companyData = {
+               "AAT": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+       "Adams & Moore": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "ADG Engineering": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Alba Partners": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+       "Apira Ltd": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Apparatus": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Association of British Insurers": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+       "AVN Solutions": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "B2B Partnerships Ltd": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Bexleyheath Shopping Centre": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+       "Black Tomato": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Blimey Partners": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Blue Diamond Limited": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+       "Bluebell Wood Children's Hospice": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Bramshaw Golf Club": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Broadwalk Shopping Centre": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+       "Burford Garden Company": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Canning House": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Cashtec": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+       "Celebration Holiday Homes Ltd": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Chandler Tuck": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Chessington Garden Centre": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+       "Cinked": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Claire House": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Concordia Consultancy": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+       "Connect98 (Text My Deal)": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Crosspath Services": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "EAF Group Ltd": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+       "EC3 Marine": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Egerton Stephens Partnership": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Ethika Ltd": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+       "Euro Eyes": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Flowz Ltd": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Frontline Analysts": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+       "FSB Technology": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Genuine Solutions UK Ltd": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "GHP Surveyors": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+       "GSM Performance": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Gustavia Ltd": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Habitat First Group": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+       "Hamelin Trust": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Hammersmith & Fulham Volunteer Centre": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Harbao Ltd / ta Baoboba": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+       "Haven House Children's Hospice": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Hays Financial Centre": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Hays Mortgage Solutions": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+       "Healthwatch Hackney": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Heart of Kent Hospice": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "HSC Candela": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+       "Innovation & Incentives": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "International Road Assessment Programme (iRAP)": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "J Matthews Plant Hire": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+       "Jazzy Js": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Kerry Panaggio": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Lankelly Chase Foundation": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+       "Leading Edge Labelsax": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Lebara Limited": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "London Vision Clinic": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Lordale UK": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "M&P Technical Services Ltd": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+       "MEC Electrical Contractors": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Mike Wintersgill": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "MJA Projects": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+       "Montage": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Murrays Hall": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "My Inventory Clerk": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+       "Nafin": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Newark Golf Club": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Newcross Healthcare": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+       "Nightingale Hammerson": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "NJT South East": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Noah's ARK Hospice ": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+       "North London Hospice": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Octopus Investments Limited": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Old Station Nursery": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+       "Parliament Hill Limited": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Paultons Golf Club": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Pemberton Group": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+       "Plan International": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Plan USA": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Polaris Financial": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+       "Premier IT": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Prime Interior Services Ltd": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "R&S (South East) Property Developments Ltd": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+       "Reef Financial Consulting Ltd": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Rolls Royce South Africa Members Club": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Simpsons Garden Centre": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+       "Skye Communications": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Skye Direct": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Soapstone Associates": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+       "Soster Agency": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Span Fab": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Stella Leisure": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+       "Sullivan Investments": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Target Lifts": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "That Media Team": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+       "The Gosling": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "The MJP": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "The Orpheus Centre": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+       "The Swan": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "TJC": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Training Only": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+       "Volunteer Centre Hackney": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Waltham Childrens Services": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "We Are Purple": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+       "Wessex Cancer Trust": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "West Ham United": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Whiteaker Creative Media": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+       "Whitgift School": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "WN Resin Bound Driveways Ltd": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+
+        "Your Place": { options: { 
+            "Cloud Documentation": "https://example.com/cloud-doc-1", 
+            "Site Documentation": "https://example.com/site-doc-1", 
+            "Customer Forms and Processes": "https://example.com/site-doc-1", 
+            "Client Connection Methods": "https://example.com/site-doc-1", 
+            "Reports": "https://example.com/site-doc-1",
+            "General": "https://example.com/site-doc-1",  
+            "Backups": "https://example.com/backups-1" } },
+    };
+
+    var guideData = {
+        "Cyber Security": { options: { "Local Admin": "https://example.com/admin-guide", "Remove Local Admin Rights": "https://example.com/remove-admin", "Printers": "https://example.com/printers" } },
+        "Network Setup": { options: { "Configuration Steps": "https://example.com/config", "Troubleshooting": "https://example.com/troubleshoot", "Security Enhancements": "https://example.com/security" } }
+    };
+
+    var chatData = {
+        greeting: ["Welcome to Skye Cloud AI 👋", "Choose an option below to get started"],
+        options: ["Companies", "Guides"],
+        companies: { title: "Please select a company", options: Object.keys(companyData) },
+        guides: { title: "Please select a guide category", options: Object.keys(guideData) }
+    };
+
+    window.onload = function () {
+        document.getElementById("chatbot").style.display = "flex"; 
+        initChat();
+    };
+
+    function initChat() {
+        var chatBox = document.getElementById("chat-box");
+        chatBox.innerHTML = ""; 
+
+        chatData.greeting.forEach(text => {
+            var msg = document.createElement("p");
+            msg.innerHTML = text;
+            msg.setAttribute("class", "msg");
+            chatBox.appendChild(msg);
+        });
+
+        showOptions(chatData.options);
+    }
+
+    function showOptions(options) {
+        var chatBox = document.getElementById("chat-box");
+
+        options.forEach(option => {
+            var opt = document.createElement("span");
+            opt.innerHTML = option;
+            opt.setAttribute("class", "opt");
+            opt.addEventListener("click", function () { 
+                chatBox.innerHTML += `<p class="msg">You selected: <strong>${option}</strong></p>`;
+                chatBox.querySelectorAll(".opt").forEach(el => el.remove());
+
+                if (option.toLowerCase() === "companies") {
+                    displaySearch(companyData, "company");
+                } else if (option.toLowerCase() === "guides") {
+                    displaySearch(guideData, "guide");
+                }
+            });
+            chatBox.appendChild(opt);
+        });
+    }
+
+    function displaySearch(data, type) {
+        var chatBox = document.getElementById("chat-box");
+        chatBox.innerHTML += `<div id="searchContainer"><input type="text" id="searchInput" placeholder="Search for a ${type}..." onkeyup="filterItems('${type}')"><div id="dropdown" class="dropdown"></div></div>`;
+        chatBox.innerHTML += `<div id="selectedItem"></div>`;
+        document.getElementById("searchContainer").style.display = "block";
+        filterItems(type);
+    }
+
+    function filterItems(type) {
+        var input = document.getElementById("searchInput").value.toLowerCase();
+        var dropdown = document.getElementById("dropdown");
+        var data = type === "company" ? companyData : guideData;
+        dropdown.innerHTML = "";
+
+        Object.keys(data).forEach(item => {
+            if (item.toLowerCase().includes(input)) {
+                var option = document.createElement("span");
+                option.innerHTML = item;
+                option.addEventListener("click", function () { 
+                    document.getElementById("searchContainer").style.display = "none";
+                    document.getElementById("selectedItem").style.display = "block";
+                    document.getElementById("selectedItem").innerHTML = `You selected: <strong>${item}</strong>`;
+                    displaySubcategories(data[item].options);
+                });
+                dropdown.appendChild(option);
+            }
+        });
+    }
+
+    function displaySubcategories(subcategories) {
+        var chatBox = document.getElementById("chat-box");
+
+        Object.keys(subcategories).forEach(subOption => {
+            var link = subcategories[subOption];
+            var opt = document.createElement("span");
+            opt.innerHTML = `${subOption}: <a href="${link}" target="_blank">${link}</a>`;
+            opt.setAttribute("class", "opt");
+            chatBox.appendChild(opt);
+        });
+    }
+    </script>
+
+</body>
+</html>

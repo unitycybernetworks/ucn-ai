@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home | Skye Cloud AI</title>
+    <link rel="icon" type="image/x-icon" href="skyecloudlogo.jpeg">
+    <style>
+        body{
+            background-color: white;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+
+    <p>
+# Define the print server
+$PrintServer = "put print server name here"
+<br> 
+# Get the list of printers
+$Printers = Get-Printer -ComputerName $PrintServer
+<br>
+# Export the list to a CSV file
+$Printers | Select-Object Name, ShareName, PortName, DriverName | Export-Csv -Path "put path here" -NoTypeInformation
+<br>
+Write-Host "Printer list exported to path"
+
+    </p>
+
+</body>
+</html>

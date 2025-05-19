@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home | Skye Cloud AI</title>
+    <link rel="icon" type="image/x-icon" href="skyecloudlogo.jpeg">
+    <style>
+        body{
+            background-color: white;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+
+    <p>
+New-LocalUser -AccountNeverExpires:$true -Password (ConvertTo-SecureString -AsPlainText -Force 'put password here') -Name 'put local admin account name here' | Add-LocalGroupMember -Group administrators
+<br> 
+WMIC USERACCOUNT WHERE Name='put the account name here' SET PasswordExpires=FALSE
+    </p>
+
+</body>
+</html>

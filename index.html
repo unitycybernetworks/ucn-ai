@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home | Skye Cloud AI</title>
+    <title>Home | Unity Cyber Networks AI</title>
     <link rel="icon" type="image/x-icon" href="skyecloudlogo.jpeg">
     <style>
         * {
@@ -130,14 +130,14 @@
     <button id="init">START CHAT</button>
 
     <div id="chatbot" style="display: none;">
-        <div class="header">Skye Cloud AI</div>
+        <div class="header">Unity Cyber Networks AI</div>
         <div id="chat-box"></div>
-        <div class="footer">Powered by Skye Cloud's Infrastructure Team</div>
+        <div class="footer">Powered by &copy; Unity Cyber Networks</div>
     </div>
 
     <script>
     var companyData = {
-               "UCN_CHILD": { options: { 
+            "UCN_CHILD": { options: { 
             "Cloud Documentation": "https://example.com/cloud-doc-1", 
             "Site Documentation": "https://example.com/site-doc-1", 
             "Customer Forms and Processes": "https://example.com/site-doc-1", 
@@ -153,7 +153,7 @@
     };
 
     var chatData = {
-        greeting: ["Welcome to Unity Cyber Networks AI 👋", "Choose an option below to get started"],
+        greeting: ["Welcome to Unity Cyber Networks AI 👋", "Choose a category below to get started"],
         options: ["Companies", "Guides"],
         companies: { title: "Please select a company", options: Object.keys(companyData) },
         guides: { title: "Please select a guide category", options: Object.keys(guideData) }
